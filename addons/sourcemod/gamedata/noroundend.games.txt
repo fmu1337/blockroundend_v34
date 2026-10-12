@@ -1,0 +1,30 @@
+"Games"
+{
+	"cstrike"
+	{
+		"Signatures"
+		{
+			"CheckWinConditions"
+			{
+				"library"	"server"
+				"windows"	"\x56\x8B\xF1\x83\xBE\x4C\x02\x00\x00\x00\x74\x09"
+				"linux"		"@_ZN12CCSGameRules18CheckWinConditionsEv"
+			}
+		}
+
+		"Addresses"
+		{
+			"CheckWinConditions"
+			{
+				"windows"
+				{
+					"signature"	"CheckWinConditions"
+				}
+				"linux"
+				{
+					"signature"	"CheckWinConditions"
+				}
+			}
+		}
+	}
+}
