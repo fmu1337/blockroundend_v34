@@ -11,19 +11,24 @@ public Plugin:myinfo =
 	url = "https://github.com/fmu1337/blockroundend_v34"
 }
 
-new Handle:hIg, Handle:hSv, bool:bSync, bool:bOn, Address:pAddr, iOrg[3], iPat[3];
+// CheckRoundTimeExpired и Windows-пролог CheckWinConditions — спасибо Reg1oxeN:
+// https://hlmod.net/threads/no-round-end.68241/#post-657507
+new Handle:hIg, Handle:hSv, bool:bSync, bool:bOn, Address:pAddr[2], iOrg[2][3], iLen[2] = {3, 1};
+new iPat[2][3] = {{0x31, 0xC0, 0xC3}, {0xC3, 0, 0}};
 
 public OnPluginStart()
 {
-	decl Handle:gd, i, bool:w;
+	decl Handle:gd, i, n, String:k[2][24];
 	HookConVarChange(hIg = CreateConVar("mp_ignore_round_win_conditions", "0", "", FCVAR_NOTIFY, true, 0.0, true, 1.0), CV);
 	HookConVarChange(hSv = CreateConVar("sv_noroundend", "0", "", FCVAR_NOTIFY, true, 0.0, true, 1.0), CV);
 	if ((gd = LoadGameConfigFile("noroundend.games")) == INVALID_HANDLE) SetFailState("noroundend: no gamedata");
-	if (!_:(pAddr = GameConfGetAddress(gd, "CheckWinConditions"))) SetFailState("noroundend: no signature");
+	k[0] = "CheckWinConditions"; k[1] = "CheckRoundTimeExpired";
+	for (n = 0; n < 2; n++)
+	{
+		if (!_:(pAddr[n] = GameConfGetAddress(gd, k[n]))) SetFailState("noroundend: no %s", k[n]);
+		for (i = 0; i < iLen[n]; i++) iOrg[n][i] = LoadFromAddress(Address:(_:pAddr[n] + i), NumberType_Int8) & 0xFF;
+	}
 	CloseHandle(gd);
-	w = FileExists("bin/server.dll");
-	iPat[0] = w ? 0xC2 : 0xC3; iPat[1] = w ? 0x04 : 0; iPat[2] = 0;
-	for (i = 0; i < 3; i++) iOrg[i] = LoadFromAddress(Address:(_:pAddr + i), NumberType_Int8) & 0xFF;
 	Set(GetConVarBool(hIg) || GetConVarBool(hSv));
 }
 
@@ -44,9 +49,9 @@ public CV(Handle:c, const String:o[], const String:n[])
 
 Set(bool:e)
 {
-	decl i;
+	decl i, n;
 	bSync = true; SetConVarBool(hIg, e); SetConVarBool(hSv, e); bSync = false;
 	if (e == bOn) return;
-	for (i = 0; i < 3; i++) StoreToAddress(Address:(_:pAddr + i), e ? iPat[i] : iOrg[i], NumberType_Int8);
+	for (n = 0; n < 2; n++) for (i = 0; i < iLen[n]; i++) StoreToAddress(Address:(_:pAddr[n] + i), e ? iPat[n][i] : iOrg[n][i], NumberType_Int8);
 	PrintToServer("[noroundend] %s", (bOn = e) ? "on" : "off");
 }
