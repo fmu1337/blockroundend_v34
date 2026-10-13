@@ -7,8 +7,14 @@
 			"CheckWinConditions"
 			{
 				"library"	"server"
-				"windows"	"\x56\x8B\xF1\x83\xBE\x4C\x02\x00\x00\x00\x74\x09"
+				"windows"	"\x83\xEC\x18\x56\x8B\xF1\x83\xBE\x30\x02\x00\x00\x00"
 				"linux"		"@_ZN12CCSGameRules18CheckWinConditionsEv"
+			}
+			"CheckRoundTimeExpired"
+			{
+				"library"	"server"
+				"windows"	"\xA1\x2A\x2A\x2A\x2A\x56\x8B\xF1\xDB\x86\x18\x02\x00\x00"
+				"linux"		"@_ZN12CCSGameRules21CheckRoundTimeExpiredEv"
 			}
 		}
 
@@ -23,6 +29,17 @@
 				"linux"
 				{
 					"signature"	"CheckWinConditions"
+				}
+			}
+			"CheckRoundTimeExpired"
+			{
+				"windows"
+				{
+					"signature"	"CheckRoundTimeExpired"
+				}
+				"linux"
+				{
+					"signature"	"CheckRoundTimeExpired"
 				}
 			}
 		}
